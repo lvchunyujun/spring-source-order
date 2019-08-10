@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:redisson="http://redisson.org/schema/redisson"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://redisson.org/schema/redisson
+       http://redisson.org/schema/redisson/redisson.xsd" >
+
+
+
+
+    <bean id="jedisReader" class="redis.clients.jedis.JedisPool" destroy-method="destroy">
+        <constructor-arg index="0">
+            <ref bean="jedisPoolConfig"/>
+        </constructor-arg>
+        <constructor-arg index="1" value="${redis.reader.host}" type="java.lang.String"/>
+        <constructor-arg index="2" value="${redis.reader.port}" type="int"/>
+        <constructor-arg index="3" value="${redis.timeout}" type="int" />
+        <constructor-arg index="4" value="${redis.writer.passwd}" type="java.lang.String" />
+    </bean>
+    <bean id="jedisWriter" class="redis.clients.jedis.JedisPool" destroy-method="destroy">
+        <constructor-arg index="0">
+            <ref bean="jedisPoolConfig"/>
+        </constructor-arg>
+        <constructor-arg index="1" value="${redis.writer.host}" type="java.lang.String"/>
+        <constructor-arg index="2" value="${redis.writer.port}" type="int"/>
+        <constructor-arg index="3" value="${redis.timeout}" type="int" />
+        <constructor-arg index="4" value="${redis.writer.passwd}" type="java.lang.String" />
+    </bean>
+
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${redis.maxTotal}"/>
+        <property name="maxIdle" value="${redis.maxIdle}"/>
+        <property name="minIdle" value="${redis.minIdle}"/>
+        <property name="maxWaitMillis" value="${redis.maxWaitMillis}"/>
+        <property name="testOnBorrow" value="${redis.testOnBorrow}"/>
+        <property name="testOnReturn" value="${redis.testOnReturn}"/>
+        <property name="testWhileIdle" value="${redis.testWhileIdle}"/>
+    </bean>
+
+    <!-- jedis sentinel模式 -->
+    <bean id="jedisSentinelPool" class="redis.clients.jedis.JedisSentinelPool">
+        <constructor-arg index="0" value="${redis.masterName}" />
+        <constructor-arg index="1">
+            <set>
+                <value>${redis.sentinel1.host}:${redis.sentinel1.port}</value>
+                <value>${redis.sentinel2.host}:${redis.sentinel2.port}</value>
+                <value>${redis.sentinel3.host}:${redis.sentinel3.port}</value>
+            </set>
+        </constructor-arg>
+        <constructor-arg index="2" ref="jedisPoolConfig" />
+        <constructor-arg index="3" value="${redis.writer.passwd}" />
+    </bean>
+    <!-- jedis sentinel模式 -->
+
+    <!--<redisson:cluster-servers-->
+            <!--idle-connection-timeout="10000"-->
+            <!--ping-timeout="1000"-->
+            <!--connect-timeout="10000"-->
+            <!--timeout="3000"-->
+            <!--retry-attempts="3"-->
+            <!--retry-interval="1500"-->
+            <!--password="do_not_use_if_it_is_not_set"-->
+            <!--subscriptions-per-connection="5"-->
+            <!--client-name="none"-->
+            <!--load-balancer-ref="myLoadBalancer"-->
+            <!--subscription-connection-minimum-idle-size="1"-->
+            <!--subscription-connection-pool-size="50"-->
+            <!--slave-connection-minimum-idle-size="10"-->
+            <!--slave-connection-pool-size="64"-->
+            <!--master-connection-minimum-idle-size="10"-->
+            <!--master-connection-pool-size="64"-->
+            <!--read-mode="SLAVE"-->
+            <!--subscription-mode="SLAVE"-->
+            <!--scan-interval="1000" >-->
+        <!--<redisson:node-address value="redis://lcyj89:7000" />-->
+        <!--<redisson:node-address value="redis://lcyj89:7001" />-->
+        <!--<redisson:node-address value="redis://lcyj89:7002" />-->
+        <!--<redisson:node-address value="redis://lcyj89:7003" />-->
+        <!--<redisson:node-address value="redis://lcyj89:7004" />-->
+        <!--<redisson:node-address value="redis://lcyj89:7005" />-->
+    <!--</redisson:cluster-servers>-->
+
+</beans>
